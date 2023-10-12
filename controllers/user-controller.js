@@ -10,13 +10,14 @@ const userController = {
             });
     }, 
     getUserById({params}, res) {
-        User.findById(req.params.userId)
+        User.findById(params.userId)
             .then(dbUserData => res.json(dbUserData))
             .catch(err => {
                 console.log(err);
                 res.sendStatus(400);
             });
     },
+    
     createUser({body}, res) {
         User.create(body)
             .then(dbUserData => res.json(dbUserData))
@@ -46,9 +47,9 @@ const userController = {
         )
         .then(dbUserData => {
             if (!dbUserData) {
-                return res.status(404).json({message: 'No user found with this id!'});
+               return res.status(404).json({message: 'No user found with this id!'});
             }
-            res.json({message: 'Friend added successfully!'});
+            res.json(dbUserData);
         })
         .catch(err => {
             console.log(err);
