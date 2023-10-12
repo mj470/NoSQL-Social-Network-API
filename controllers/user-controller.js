@@ -47,6 +47,18 @@ const userController = {
             res.status(400).json({ message: err.message });
         }
     },
+    async deleteUserById({ params }, res) {
+        try {
+            const dbUserData = await User.findOneAndDelete({_id: params.userId});
+            if (!dbUserData) {
+                return res.status(404).json({ message: 'No user found with this id!' });
+            }
+            res.json({ message: 'User deleted successfully!' });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: "Internal server error." });
+        }
+    },
 
     async addFriend({params}, res) {
         try {
