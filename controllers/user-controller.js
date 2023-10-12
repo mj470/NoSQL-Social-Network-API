@@ -13,7 +13,8 @@ const userController = {
 
     async getUserById({params}, res) {
         try {
-            const dbUserData = await User.findById(params.userId);
+            const dbUserData = await User.findById(params.userId).populate('friends').populate('thoughts');
+
             if (!dbUserData) {
                 return res.status(404).json({message: 'No user found with this id!'});
             }
