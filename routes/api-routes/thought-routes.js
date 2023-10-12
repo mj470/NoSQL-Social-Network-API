@@ -3,7 +3,7 @@ const {
     getAllThoughts,
     getThoughtById,
     createThought,
-    updateThoughtById,
+    updateThought,
     deleteThought,
     addReaction,
     removeReaction,
@@ -11,7 +11,7 @@ const {
 
 router.route('/').get(getAllThoughts).post(createThought);
 
-router.route('/:thoughtId').get(getThoughtById).put(updateThoughtById).delete(deleteThought);
+router.route('/:thoughtId').get(getThoughtById).put(updateThought).delete(deleteThought);
 
 router.route('/:thoughtId/reactions').post(addReaction);
 
