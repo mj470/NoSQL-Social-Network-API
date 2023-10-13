@@ -1,11 +1,11 @@
 {
-    "name": "NoSQL-Social-Network",
+    "name": "NoSQL Social Network API",
     "version": "1.0.0",
     "description": "A social network API built with NoSQL",
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "watch": "nodemon server.js"
+        "dev": "nodemon server.js"
     },
     "repository": {
         "type": "git",
@@ -20,9 +20,9 @@
     "homepage": "https://github.com/mj470/NoSQL-Social-Network-API#readme",
     "dependencies": {
         "express": "^4.17.1",
-        "mongoose": "^5.13.2"
+        "mongoose": "^7.0.2"
     },
     "devDependencies": {
-        "nodemon": "^2.0.7"
+        "nodemon": "^2.0.9"
     }
 }
