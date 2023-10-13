@@ -1,5 +1,4 @@
 const { Thought, User } = require('../models');
-const {Types} = require('mongoose');
 
 module.exports = {
     async getAllThoughts(req, res) {
@@ -117,5 +116,5 @@ module.exports = {
     },
 };
 
-module.exports = thoughtController;
+
 
