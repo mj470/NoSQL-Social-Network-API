@@ -1,9 +1,9 @@
-const { User } = require('../models');
+const { User, Thought } = require('../models');
 
-const userController = {
+module.exports = {
     async getAllUsers(req, res) {
         try {
-            const dbUserData = await User.find({});
+            const dbUserData = await User.find();
             res.json(dbUserData);
         } catch (err) {
             console.error(err);
@@ -11,9 +11,9 @@ const userController = {
         }
     }, 
 
-    async getUserById({params}, res) {
+    async getUserById(req, res) {
         try {
-            const dbUserData = await User.findById(params.userId).populate('friends').populate('thoughts');
+            const dbUserData = await User.findById({_id: req.params.userId}).select("-__v");
 
             if (!dbUserData) {
                 return res.status(404).json({message: 'No user found with this id!'});
@@ -25,47 +25,51 @@ const userController = {
         }
     },
 
-    async createUser({body}, res) {
+    async createUser(req, res) {
         try {
-            const dbUserData = await User.create(body);
-            res.status(201).json(dbUserData); // 201 for resource creation
+            const dbUserData = await User.create(req.body);
+            res.json(dbUserData);
         } catch (err) {
             console.error(err);
-            res.status(400).json({ message: err.message }); // Validation or bad request errors usually have a 400 status
+            res.status(500).json(err);
         }
     },
 
-    async updateUserById({params, body}, res) {
+    async updateUserById(req, res) {
         try {
-            const dbUserData = await User.findOneAndUpdate({_id: params.userId}, body, {new: true});
+            const dbUserData = await User.findOneAndUpdate(
+                {_id: req.params.userId},
+                {$set: req.body},
+                {runValidators: true, new: true});
             if (!dbUserData) {
                 return res.status(404).json({message: 'No user found with this id!'});
             }
             res.json(dbUserData);
         } catch (err) {
             console.error(err);
-            res.status(400).json({ message: err.message });
+            res.status(500).json(err);
         }
     },
-    async deleteUserById({ params }, res) {
+    async deleteUserById(req, res) {
         try {
-            const dbUserData = await User.findOneAndDelete({_id: params.userId});
+            const dbUserData = await User.findOneAndDelete({_id: req.params.userId});
             if (!dbUserData) {
                 return res.status(404).json({ message: 'No user found with this id!' });
             }
-            res.json({ message: 'User deleted successfully!' });
+            await Thought.deleteMany({_id: { $in: dbUserData.thoughts}});
+            res.json({ message: 'User and thoughts deleted successfully!' });
         } catch (err) {
             console.error(err);
-            res.status(500).json({ message: "Internal server error." });
+            res.status(500).json(err);
         }
     },
 
-    async addFriend({params}, res) {
+    async addFriend(req, res) {
         try {
             const dbUserData = await User.findOneAndUpdate(
-                {_id: params.userId},
-                {$addToSet: {friends: params.friendId}},
-                {new: true}
+                {_id: req.params.userId},
+                {$addToSet: {friends: req.body.userId}},
+                {runValidators: true, new: true}
             );
             if (!dbUserData) {
                 return res.status(404).json({message: 'No user found with this id!'});
@@ -73,16 +77,16 @@ const userController = {
             res.json({message: 'Friend added successfully!'});
         } catch (err) {
             console.error(err);
-            res.status(500).json({ message: "Internal server error." });
+            res.status(500).json(err);
         }
     },
 
-    async removeFriend({params}, res) {
+    async removeFriend(req, res) {
         try {
             const dbUserData = await User.findOneAndUpdate(
-                {_id: params.userId},
-                {$pull: {friends: params.friendId}},
-                {new: true}
+                {_id: req.params.userId},
+                {$pull: {friends: req.params.friendId}},
+                {runValidators: true, new: true}
             );
             if (!dbUserData) {
                 return res.status(404).json({message: 'No user found with this id!'});
@@ -90,7 +94,7 @@ const userController = {
             res.json({message: 'Friend removed successfully!'});
         } catch (err) {
             console.error(err);
-            res.status(500).json({ message: "Internal server error." });
+            res.status(500).json(err);
         }
     },
 };
